@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 /**
  * @extends Factory<AnggotaModel>
  */
-class AnggotaModelFactory extends Factory
+class AnggotaFactory extends Factory
 {
     /**
      * Define the model's default state.
