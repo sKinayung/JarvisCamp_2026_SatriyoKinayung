@@ -13,6 +13,6 @@ class AnggotaSeeder extends Seeder
      */
     public function run(): void
     {
-        AnggotaModel::factory()->count(10)->create();
+        AnggotaModel::factory()->count(15)->create();
     }
 }
