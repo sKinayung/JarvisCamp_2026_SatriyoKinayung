@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\KategoriModel;
+use App\Models\Kategori;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

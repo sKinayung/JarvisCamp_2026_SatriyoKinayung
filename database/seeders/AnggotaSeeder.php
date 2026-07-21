@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\AnggotaModel;
+use App\Models\Anggota;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 

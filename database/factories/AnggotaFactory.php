@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\AnggotaModel;
+use App\Models\Anggota;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
