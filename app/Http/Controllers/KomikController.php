@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Komik;
 use Illuminate\Http\Request;
+use App\Http\Requests\StoreKomikRequest;
+use App\Http\Requests\UpdateKomikRequest;
+use App\Http\Resources\KomikResource;
 
 class KomikController extends Controller
 {
@@ -18,13 +21,13 @@ class KomikController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreKomikRequest $request)
     {
         $komik = Komik::create($request->all());
 
         return response()->json([
             'message' => "Komik berhasil ditambahkan",
-            'data' => $komik
+            'data' => new KomikResource($komik)
         ], 201);
     }
 
@@ -33,13 +36,13 @@ class KomikController extends Controller
      */
     public function show(string $id)
     {
-        return Komik::findOrFail($id);
+        return new KomikResource(Komik::findOrFail($id));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateKomikRequest $request, string $id)
     {
         $komik = Komik::findOrFail($id);
 
@@ -47,7 +50,7 @@ class KomikController extends Controller
 
         return response()->json([
             'message' => 'Komik berhasil di update',
-            'data' => $komik
+            'data' => new KomikResource($komik)
         ]);
     }
 
