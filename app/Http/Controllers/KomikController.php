@@ -7,15 +7,19 @@ use Illuminate\Http\Request;
 use App\Http\Requests\StoreKomikRequest;
 use App\Http\Requests\UpdateKomikRequest;
 use App\Http\Resources\KomikResource;
+use App\Traits\ApiResponse;
 
 class KomikController extends Controller
 {
+    use ApiResponse;
+
+    public function __construct(protected KomikService $komikService) {}
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return Komik::all();
+        return $this->success(KomikResource::collection($this->komikService->getAll()));
     }
 
     /**
@@ -23,12 +27,9 @@ class KomikController extends Controller
      */
     public function store(StoreKomikRequest $request)
     {
-        $komik = Komik::create($request->all());
+        $komik = Komik::create($request->validate());
 
-        return response()->json([
-            'message' => "Komik berhasil ditambahkan",
-            'data' => new KomikResource($komik)
-        ], 201);
+        return $this->success(new KomikResource($komik), 'Komik Berhasil Ditambahkan', 201);
     }
 
     /**
@@ -36,7 +37,7 @@ class KomikController extends Controller
      */
     public function show(string $id)
     {
-        return new KomikResource(Komik::findOrFail($id));
+        return $this->success(new KomikResource($this->komikService->getById($id)));
     }
 
     /**
@@ -46,12 +47,9 @@ class KomikController extends Controller
     {
         $komik = Komik::findOrFail($id);
 
-        $komik->update($request->all());
+        $komik->update($request->validated());
 
-        return response()->json([
-            'message' => 'Komik berhasil di update',
-            'data' => new KomikResource($komik)
-        ]);
+        return $this->success(new KomikResource($komik), 'Komik Berhasil Diupdate');
     }
 
     /**
@@ -61,8 +59,6 @@ class KomikController extends Controller
     {
         Komik::findOrFail($id)->delete();
 
-        return response()->json([
-            'message' => 'Komik berhasil di hapus',
-        ]);
+        return $this->success(null, 'Komik Berhasil Dihapus');
     }
 }
