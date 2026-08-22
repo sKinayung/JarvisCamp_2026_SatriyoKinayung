@@ -2,8 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\PeminjamanService;
-use App\services\PeminjamanServices;
+use App\Services\PeminjamanServices;
 use Illuminate\Http\Request;
 
 class PeminjamanController extends Controller

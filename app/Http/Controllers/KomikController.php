@@ -7,13 +7,14 @@ use Illuminate\Http\Request;
 use App\Http\Requests\StoreKomikRequest;
 use App\Http\Requests\UpdateKomikRequest;
 use App\Http\Resources\KomikResource;
+use App\Services\KomikServices;
 use App\Traits\ApiResponse;
 
 class KomikController extends Controller
 {
     use ApiResponse;
 
-    public function __construct(protected KomikService $komikService) {}
+    public function __construct(protected KomikServices $komikService) {}
     /**
      * Display a listing of the resource.
      */

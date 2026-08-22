@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Models\Komik;
 
-class KomikService
+class KomikServices
 {
     public function getAll()
     {
