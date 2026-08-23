@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AnggotaController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\KomikController;
@@ -18,9 +19,13 @@ Route::get('/test', function () {
     ]);
 });
 
-Route::post('/peminjaman', [PeminjamanController::class, 'store']);
-
-Route::apiResource('items', ItemController::class);
-Route::apiResource('kategori', KategoriController::class);
-Route::apiResource('komik', KomikController::class);
+Route::post('/login', [AuthController::class, 'login']);
 Route::apiResource('anggota', AnggotaController::class);
+Route::apiResource('items', ItemController::class);
+
+// Route terproteksi, wajib token
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('kategori', KategoriController::class);
+    Route::apiResource('komik', KomikController::class);
+    Route::post('/peminjaman', [PeminjamanController::class, 'store']);
+});

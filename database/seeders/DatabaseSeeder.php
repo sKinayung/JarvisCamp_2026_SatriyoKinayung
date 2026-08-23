@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
             KategoriSeeder::class,
             KomikSeeder::class,
             AnggotaSeeder::class,
+            UserSeeder::class,
         ]);
     }
 }
