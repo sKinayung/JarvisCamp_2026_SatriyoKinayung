@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Komik extends Model
 {
@@ -19,12 +21,14 @@ class Komik extends Model
         'file_pdf'
     ];
 
-    public function kategori()
+    // Setiap Komik dimilki oleh satu kategori
+    public function kategori(): BelongsTo
     {
         return $this->belongsTo(Kategori::class);
     }
 
-    public function peminjaman()
+    // Setiap Komik dapat dipinjam oleh banyak anggota
+    public function peminjaman(): HasMany
     {
         return $this->hasMany(Peminjaman::class);
     }

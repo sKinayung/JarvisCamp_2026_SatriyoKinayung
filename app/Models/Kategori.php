@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Kategori extends Model
 {
@@ -15,7 +16,7 @@ class Kategori extends Model
         'nama_kategori',
     ];
 
-    public function komik()
+    public function komik(): HasMany
     {
         return $this->hasMany(Komik::class);
     }
