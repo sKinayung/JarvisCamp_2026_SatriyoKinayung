@@ -27,7 +27,7 @@ class PeminjamanFactory extends Factory
             'komik_id' => Komik::factory(),
             'tanggal_peminjaman' => fake()->date(),
             'tanggal_kembali' => fake()->optional()->date(),
-            'status' => fake()->randomElement(['pending', 'approved', 'returned']),
+            'status' => fake()->randomElement(['dipinjam', 'dikembalikan', 'terlambat']),
         ];
     }
 }
