@@ -4,8 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class AnggotaModel extends Model
+class Anggota extends Model
 {
     use HasFactory;
 
@@ -17,4 +18,10 @@ class AnggotaModel extends Model
         'alamat',
         'tanggal_daftar',
     ];
+
+    // 1 anggota memiliki banyak riwayat peminjaman
+    public function peminjaman(): HasMany
+    {
+        return $this->hasMany(Peminjaman::class);
+    }
 }

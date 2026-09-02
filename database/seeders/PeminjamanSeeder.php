@@ -2,17 +2,17 @@
 
 namespace Database\Seeders;
 
-use App\Models\Kategori;
+use App\Models\Peminjaman;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class KategoriSeeder extends Seeder
+class PeminjamanSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        Kategori::factory()->count(5)->create();
+        Peminjaman::factory(20)->create();
     }
 }
