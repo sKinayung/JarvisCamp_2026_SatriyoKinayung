@@ -2,30 +2,39 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Kategori;
-use Illuminate\Http\Request;
+use App\Http\Requests\StoreKategoriRequest;
+use App\Http\Requests\UpdateKategoriRequest;
+use App\Http\Resources\KategoriResource;
+use App\Services\KategoriService;
+use App\Traits\ApiResponse;
 
 class KategoriController extends Controller
 {
+    use ApiResponse;
+
     /**
      * Display a listing of the resource.
      */
+
+    public function __construct(protected KategoriService $kategoriService) {}
     public function index()
     {
-        return Kategori::all();
+        $kategori = $this->kategoriService->index();
+        return $this->success(
+            KategoriResource::collection($kategori),
+            "Daftar komik berhasil diambil"
+        );
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreKategoriRequest $request)
     {
-        $kategori = Kategori::create($request->all());
+        //validated(): hanya field yang lolos Form Request (aman dari mass-assignment)
 
-        return response()->json([
-            'message' => 'Kategori berhasil ditambahkan',
-            'data' => $kategori
-        ], 201);
+        $kategori = $this->kategoriService->store($request->validated());
+        return $this->success(new KategoriResource($kategori), "Kategori berhasil ditambahkan", 201);
     }
 
     /**
@@ -33,21 +42,19 @@ class KategoriController extends Controller
      */
     public function show(string $id)
     {
-        return Kategori::findOrFail($id);
+        $kategori = $this->kategoriService->show($id);
+
+        return $this->success(new KategoriResource($kategori), "Detail berhasil diambil");
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateKategoriRequest $request, string $id)
     {
-        $kategori = Kategori::findOrFail($id);
-        $kategori->update($request->all());
+        $kategori = $this->kategoriService->update($id, $request->validated());
 
-        return response()->json([
-            'message' => 'Kategori berhasil di update',
-            'data' => $kategori
-        ]);
+        return $this->success(new KategoriResource($kategori), "Kategori berhasil diupdate");
     }
 
     /**
@@ -55,10 +62,7 @@ class KategoriController extends Controller
      */
     public function destroy(string $id)
     {
-        Kategori::findOrFail($id)->delete();
-
-        return response()->json([
-            'message' => 'Kategori berhasil di hapus',
-        ]);
+        $this->kategoriService->destroy($id);
+        return $this->success(null, "Kategori berhasil dihapus");
     }
 }

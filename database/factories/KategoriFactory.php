@@ -6,7 +6,7 @@ use App\Models\Kategori;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<KategoriModel>
+ * @extends Factory<Kategori>
  */
 class KategoriFactory extends Factory
 {
@@ -18,20 +18,8 @@ class KategoriFactory extends Factory
     public function definition(): array
     {
         return [
-            'nama_kategori' => fake()->randomElement([
-                'Action',
-                'Adventure',
-                'Comedy',
-                'Drama',
-                'Fantasy',
-                'Horror',
-                'Mystery',
-                'Romance',
-                'Sci-Fi',
-                'Slice of Life',
-                'Sports',
-                'Thriller'
-            ])
+            // unique(): pastikan tidak ada nama kategori dummy yang kembar
+            'nama_kategori' => $this->faker->unique()->words(2, true),
         ];
     }
 }

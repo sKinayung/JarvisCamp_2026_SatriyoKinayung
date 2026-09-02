@@ -2,20 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Anggota;
 use App\Http\Requests\StoreAnggotaRequest;
 use App\Http\Requests\UpdateAnggotaRequest;
-use App\Http\Resources\AnggotaSource;
-use Illuminate\Http\Request;
+use App\Http\Resources\AnggotaResource;
+use App\Services\AnggotaService;
+use App\Traits\ApiResponse;
 
 class AnggotaController extends Controller
 {
+    use ApiResponse;
+
     /**
      * Display a listing of the resource.
      */
+    public function __construct(protected AnggotaService $anggotaService) {}
     public function index()
     {
-        return AnggotaSource::collection(Anggota::all());
+        $anggota = $this->anggotaService->index();
+        return $this->success(AnggotaResource::collection($anggota), "Daftar anggota berhasil diambil", 200);
     }
 
     /**
@@ -23,12 +27,8 @@ class AnggotaController extends Controller
      */
     public function store(StoreAnggotaRequest $request)
     {
-        $anggota = Anggota::create($request->all());
-
-        return response()->json([
-            'message' => 'Anggota berhasil ditambahkan',
-            'data' => new AnggotaSource($anggota)
-        ], 201);
+        $anggota = $this->anggotaService->store($request->validated());
+        return $this->success(new AnggotaResource($anggota), "Anggota berhasil ditambahkan", 201);
     }
 
     /**
@@ -36,7 +36,8 @@ class AnggotaController extends Controller
      */
     public function show(string $id)
     {
-        return new AnggotaSource(Anggota::findOrFail($id));
+        $anggota = $this->anggotaService->show($id);
+        return $this->success(new AnggotaResource($anggota), "Detail Anggota Berhasil Diambil");
     }
 
     /**
@@ -44,13 +45,8 @@ class AnggotaController extends Controller
      */
     public function update(UpdateAnggotaRequest $request, string $id)
     {
-        $anggota = Anggota::findOrFail($id);
-        $anggota->update($request->all());
-
-        return response()->json([
-            'message' => 'Anggota berhasil di update',
-            'data' => new AnggotaSource($anggota)
-        ]);
+        $anggota = $this->anggotaService->update($id, $request->validated());
+        return $this->success(new AnggotaResource($anggota), "Anggota berhasil diperbarui");
     }
 
     /**
@@ -58,10 +54,7 @@ class AnggotaController extends Controller
      */
     public function destroy(string $id)
     {
-        Anggota::findOrFail($id)->delete();
-
-        return response()->json([
-            'message' => 'Anggota berhasil dihapus'
-        ]);
+        $this->anggotaService->destroy($id);
+        return $this->success(null, "Anggota berhasil dihapus");
     }
 }

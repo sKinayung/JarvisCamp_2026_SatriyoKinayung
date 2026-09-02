@@ -13,19 +13,20 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // // User::factory(10)->create();
+        // Bikin 1 admin default untuk testing login
+        User::factory()->create([
+            'name' => 'Test User',
+            'email' => 'test@example.com',
+        ]);
 
-        // User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        // Urutan penting: kategori dulu (FK-nya dipakai komik),
+        // lalu komik & anggota, terakhir peminjaman (butuh keduanya).
 
         $this->call([
-            ItemSeeder::class,
             KategoriSeeder::class,
             KomikSeeder::class,
             AnggotaSeeder::class,
-            UserSeeder::class,
+            PeminjamanSeeder::class,
         ]);
     }
 }

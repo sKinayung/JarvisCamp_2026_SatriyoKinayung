@@ -18,10 +18,10 @@ class AnggotaFactory extends Factory
     public function definition(): array
     {
         return [
-            'nama' => $this->faker->name(),
-            'no_hp' => $this->faker->numerify('08##########'),
-            'alamat' => $this->faker->address(),
-            'tanggal_daftar' => $this->faker->date(),
+            'nama' => fake()->name(),
+            'no_hp' => fake()->phoneNumber(),
+            'alamat' => fake()->address(),
+            'tanggal_daftar' => fake()->date(),
         ];
     }
 }

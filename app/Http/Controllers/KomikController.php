@@ -2,25 +2,26 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Komik;
-use Illuminate\Http\Request;
 use App\Http\Requests\StoreKomikRequest;
 use App\Http\Requests\UpdateKomikRequest;
 use App\Http\Resources\KomikResource;
-use App\Services\KomikServices;
+use App\Services\KomikService;
 use App\Traits\ApiResponse;
 
 class KomikController extends Controller
 {
     use ApiResponse;
-
-    public function __construct(protected KomikServices $komikService) {}
     /**
      * Display a listing of the resource.
      */
+    public function __construct(protected KomikService $komikService) {}
     public function index()
     {
-        return $this->success(KomikResource::collection($this->komikService->getAll()));
+        $komik = $this->komikService->index();
+        return $this->success(
+            KomikResource::collection($komik),
+            "Daftar komik berhasil diambil"
+        );
     }
 
     /**
@@ -28,9 +29,15 @@ class KomikController extends Controller
      */
     public function store(StoreKomikRequest $request)
     {
-        $komik = Komik::create($request->validate());
+        // safe()->except(): ambil semua field valid kecuali file_pdf (di-handle terpi sah)
+        $data = $request->safe()->except('file_pdf');
+        // Simpan file ke storage/app/public/komiks — yang disimpan di DB hanyalah path-nya
+        if ($request->hasFile("file_pdf")) {
+            $data['file_pdf'] = $request->file("file_pdf")->store("komik", "public");
+        }
 
-        return $this->success(new KomikResource($komik), 'Komik Berhasil Ditambahkan', 201);
+        $komik = $this->komikService->store($data);
+        return $this->success(new KomikResource($komik), "Komik berhasil ditambahkan", 201);
     }
 
     /**
@@ -38,7 +45,8 @@ class KomikController extends Controller
      */
     public function show(string $id)
     {
-        return $this->success(new KomikResource($this->komikService->getById($id)));
+        $komik = $this->komikService->show($id);
+        return $this->success(new KomikResource($komik), "Data komik berhasil diambil");
     }
 
     /**
@@ -46,11 +54,15 @@ class KomikController extends Controller
      */
     public function update(UpdateKomikRequest $request, string $id)
     {
-        $komik = Komik::findOrFail($id);
+        // safe()->except(): ambil semua field valid kecuali file_pdf (di-handle terpi sah)
+        $data = $request->safe()->except('file_pdf');
+        // Simpan file ke storage/app/public/komiks — yang disimpan di DB hanyalah path-nya
+        if ($request->hasFile("file_pdf")) {
+            $data['file_pdf'] = $request->file("file_pdf")->store("komik", "public");
+        }
 
-        $komik->update($request->validated());
-
-        return $this->success(new KomikResource($komik), 'Komik Berhasil Diupdate');
+        $komik = $this->komikService->update($id, $data);
+        return $this->success(new KomikResource($komik), "Komik berhasil diupdate");
     }
 
     /**
@@ -58,8 +70,7 @@ class KomikController extends Controller
      */
     public function destroy(string $id)
     {
-        Komik::findOrFail($id)->delete();
-
-        return $this->success(null, 'Komik Berhasil Dihapus');
+        $this->komikService->destroy($id);
+        return $this->success(null, "Komik berhasil dihapus");
     }
 }

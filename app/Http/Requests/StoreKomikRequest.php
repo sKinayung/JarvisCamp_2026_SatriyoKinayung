@@ -23,12 +23,12 @@ class StoreKomikRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'judul' => 'required|string|max:255',
-            'penulis' => 'required|string|max:255',
-            'kategori_id' => 'required|exists:kategori,id',
-            'stok' => 'required|integer|min:0',
-            'status' => 'in:available,unavailable',
-            'file_pdf' => 'nullable|file|mimes:pdf|max:5120',
+            "judul" => ["required", "string", "max:255"],
+            "penulis" => ["required", "string", "max:255"],
+            "kategori_id" => ["required", "integer", "exists:kategori,id"],
+            "stok" => ["required", "integer", "min:0"],
+            // opsional, wajib PDF, maksimal 2 MB
+            'file_pdf' => ['nullable', 'file', 'mimes:pdf', 'max:2048'],
         ];
     }
 }

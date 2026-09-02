@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class KomikResource extends JsonResource
+class AnggotaResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,14 +16,10 @@ class KomikResource extends JsonResource
     {
         return [
             "id" => $this->id,
-            "judul" => $this->judul,
-            "penulis" => $this->penulis,
-            "kategori_id" => $this->kategori_id,
-            // Hanya muncul jika relasi 'kategori' sudah di-eager-load (mencegah N+1)
-            "nama_kategori" => $this->whenLoaded('kategori', fn() => $this->kategori->nama_kategori),
-            "stok" => $this->stok,
-            "status" => $this->status,
-            "file_pdf" => $this->file_pdf,
+            "nama" => $this->nama,
+            "no_hp" => $this->no_hp,
+            "alamat" => $this->alamat,
+            "tanggal_daftar" => $this->tanggal_daftar,
             "created_at" => $this->created_at?->format('Y-m-d H:i:s'),
             "updated_at" => $this->updated_at?->format('Y-m-d H:i:s'),
         ];

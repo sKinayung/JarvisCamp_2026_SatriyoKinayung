@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
@@ -12,32 +14,36 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
+        // Validasi minimal untuk memastikan payload masuk akal
+        $credentials = $request->validate([
+            "email" => ["required", "email"],
+            "password" => ["required", "string"],
         ]);
 
-        if (!Auth::attempt($request->only('email', 'password'))) {
-            return $this->error('Email atau Password salah', 401);
+        // Cek user
+        $user = User::where("email", $credentials["email"])->first();
+
+        // Cek user ada + password cocok (bandingkan dengan hash di DB)
+        if (!$user || !Hash::check($credentials['password'], $user->password)) {
+            throw ValidationException::withMessages([
+                "email" => ["Email atau password salah"]
+            ]);
         }
 
-        $user = Auth::user();
-        $token = $user->createToken('admin-token')->plainTextToken;
+        // plainTextToken hanya muncul sekali di sini — client wajib menyimpan
+        $token = $user->createToken("api-token")->plainTextToken;
 
         return $this->success([
-            'user' => $user,
-            'token' => $token
-        ], 'Login berhasil !');
+            "user" => $user->only(["id", "name", "email"]),
+            "token" => $token,
+        ], "Login berhasil");
     }
 
     public function logout(Request $request)
     {
-        $user = Auth::user();
-        $user->tokens()->delete();
+        // Hapus hanya token yang sedang dipakai — token lain milik user ini tetap valid
+        $request->user()->currentAccessToken()->delete();
 
-        return $this->success('Logout berhasil', [
-            'user' => $user,
-            'token' => $token
-        ]);
+        return $this->success(null, "Logout berhasil");
     }
 }

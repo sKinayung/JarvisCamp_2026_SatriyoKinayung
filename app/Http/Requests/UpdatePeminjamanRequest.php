@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreAnggotaRequest extends FormRequest
+class UpdatePeminjamanRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,10 +23,12 @@ class StoreAnggotaRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "nama" => ["required", "string", "max:255"],
-            "no_hp" => ["required", "string", "max:20"],
-            "alamat" => ["required", "string"],
-            "tanggal_daftar" => ["required", "date"],
+            // Untuk update, semua field opsional (pakai sometimes ) supaya bisa update sebagian:
+            "anggota_id" => ["sometimes", "integer", "exists:anggota,id"],
+            "komik_id" => ["sometimes", "integer", "exists:komik,id"],
+            "tanggal_pinjam" => ["sometimes", "date"],
+            "tanggal_kembali" => ["nullable", "date"],
+            "status" => ["sometimes", "in:dipinjam,dikembalikan,telat"],
         ];
     }
 }

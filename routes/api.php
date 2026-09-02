@@ -1,31 +1,21 @@
 <?php
 
-use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AnggotaController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\KomikController;
-use App\Http\Controllers\ItemController;
 use App\Http\Controllers\PeminjamanController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
-
-Route::get('/test', function () {
-    return response()->json([
-        'message' => 'Hello World - API is working',
-    ]);
-});
-
-Route::post('/login', [AuthController::class, 'login']);
-Route::apiResource('anggota', AnggotaController::class);
-Route::apiResource('items', ItemController::class);
-
-// Route terproteksi, wajib token
+// Endpoint publik untuk mendapatkan token — dipakai sebelum akses endpoint terproteksi
+Route::post('/login', [AuthController::class, 'login'])->name('login');
+// Semua route di dalam grup ini WAJIB Bearer Token valid di header Authorization
 Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout']);
+    // apiResource = 5 route CRUD sekaligus (index, store, show, update, destroy)
     Route::apiResource('kategori', KategoriController::class);
     Route::apiResource('komik', KomikController::class);
-    Route::post('/peminjaman', [PeminjamanController::class, 'store']);
+    Route::apiResource('anggota', AnggotaController::class);
+    Route::apiResource('peminjaman', PeminjamanController::class);
+    // Endpoint tambahan di luar CRUD standar: aksi pengembalian komik
+    Route::put('/peminjaman/{id}/kembali', [PeminjamanController::class, 'kembali']);
 });

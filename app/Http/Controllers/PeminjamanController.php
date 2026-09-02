@@ -2,54 +2,84 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\PeminjamanServices;
-use Illuminate\Http\Request;
+use App\Http\Requests\StorePeminjamanRequest;
+use App\Http\Requests\UpdatePeminjamanRequest;
+use App\Http\Resources\PeminjamanResource;
+use App\Services\PeminjamanService;
+use App\Traits\ApiResponse;
+use DomainException;
+use RuntimeException;
 
 class PeminjamanController extends Controller
 {
+    use ApiResponse;
     /**
      * Display a listing of the resource.
      */
-    public function __construct(protected PeminjamanServices $peminjamanServices) {}
+    public function __construct(protected PeminjamanService $peminjamanService) {}
+    public function index()
+    {
+        $peminjaman = $this->peminjamanService->index();
+        return $this->success(PeminjamanResource::collection($peminjaman), "Daftar peminjaman berhasil diambil", 200);
+    }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StorePeminjamanRequest $request)
     {
-        $request->validate([
-            "anggota_id" => "required|exists:anggota,id",
-            "komik_id" => "required|exists:komik,id",
-        ]);
-        $peminjaman = $this->peminjamanServices->pinjam($request->all());
+        try {
+            $peminjaman = $this->peminjamanService->store($request->validated());
+        } catch (RuntimeException $e) {
+            return $this->error($e->getMessage(), 400);
+        }
 
-        return response()->json([
-            "message" => 'Peminjaman berhasil dibuat',
-            "data" => $peminjaman
-        ], 201);
+        return $this->success(
+            new PeminjamanResource($peminjaman),
+            "Peminjaman berhasil dibuat",
+            201
+        );
     }
 
-    // /**
-    //  * Display the specified resource.
-    //  */
-    // public function show(string $id)
-    // {
-    //     //
-    // }
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+        $peminjaman = $this->peminjamanService->show($id);
+        return $this->success(new PeminjamanResource($peminjaman), "Detail peminjaman berhasil diambil");
+    }
 
-    // /**
-    //  * Update the specified resource in storage.
-    //  */
-    // public function update(Request $request, string $id)
-    // {
-    //     //
-    // }
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(UpdatePeminjamanRequest $request, string $id)
+    {
+        $peminjaman = $this->peminjamanService->update($id, $request->validated());
+        return $this->success(new PeminjamanResource($peminjaman), "Peminjaman berhasil diupdate");
+    }
 
-    // /**
-    //  * Remove the specified resource from storage.
-    //  */
-    // public function destroy(string $id)
-    // {
-    //     //
-    // }
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        $this->peminjamanService->destroy($id);
+        return $this->success(null, "Peminjaman berhasil dihapus");
+    }
+
+    // Aksi bisnis khusus: pengembalian komik
+    public function kembali(string $id)
+    {
+        try {
+            $peminjaman = $this->peminjamanService->kembali($id);
+        } catch (DomainException $e) {
+            // Sudah dikembalikan sebelumnya
+            return $this->error($e->getMessage(), 400);
+        }
+        return $this->success(
+            new PeminjamanResource($peminjaman),
+            'Pengembalian komik berhasil.'
+        );
+    }
 }

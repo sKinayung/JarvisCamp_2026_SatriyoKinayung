@@ -12,7 +12,7 @@ class UpdateAnggotaRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -23,10 +23,10 @@ class UpdateAnggotaRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nama' => 'sometimes|required|string|max:255',
-            'no_hp' => 'sometimes|required|string|starts_with:08|min:10|max:13',
-            'alamat' => 'sometimes|required|string',
-            'tanggal_daftar' => 'sometimes|required|date|before_or_equal:today',
+            "nama" => ["required", "string", "max:255"],
+            "no_hp" => ["required", "string", "max:20"],
+            "alamat" => ["required", "string"],
+            "tanggal_daftar" => ["required", "date"],
         ];
     }
 }

@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreAnggotaRequest extends FormRequest
+class StorePeminjamanRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,10 +23,10 @@ class StoreAnggotaRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "nama" => ["required", "string", "max:255"],
-            "no_hp" => ["required", "string", "max:20"],
-            "alamat" => ["required", "string"],
-            "tanggal_daftar" => ["required", "date"],
+            // exists: anggota_id/komik_id harus benar-benar ada di DB
+            "anggota_id" => ['required', "integer", "exists:anggota,id"],
+            "komik_id" => ['required', "integer", "exists:komik,id"],
+            "tanggal_peminjaman" => ["required", "date"],
         ];
     }
 }

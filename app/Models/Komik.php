@@ -21,14 +21,14 @@ class Komik extends Model
         'file_pdf'
     ];
 
-    // Setiap Komik dimilki oleh satu kategori
+    // Setiap komik dimiliki oleh satu kategori
     public function kategori(): BelongsTo
     {
         return $this->belongsTo(Kategori::class);
     }
 
-    // Setiap Komik dapat dipinjam oleh banyak anggota
-    public function peminjaman(): HasMany
+    // 1 komik bisa dipinjam berkali-kali (di waktu berbeda)
+    public function peminjama(): HasMany
     {
         return $this->hasMany(Peminjaman::class);
     }
